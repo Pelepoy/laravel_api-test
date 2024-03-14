@@ -14,14 +14,15 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255|min:3',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed'
+            'password' => 'required|min:6|confirmed',
+            'is_admin' => 'boolean'
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'is_admin' => false
+            'is_admin' => $request->is_admin
         ]);
 
         if ($user) {
@@ -57,14 +58,15 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Login successful',
+            'message' => 'Login successfully',
             'token' => $token
         ], 200);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $request->user()->tokens()->delete();
+
         return response()->json([
             'status' => true,
             'message' => 'Logout successfully'
