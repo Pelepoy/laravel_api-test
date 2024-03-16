@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
 
 /*
@@ -22,7 +23,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/users/register', [AuthController::class, 'register']);
 Route::post('/user/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])
-    ->middleware('auth:sanctum');
 
-Route::apiResource('/users', UserController::class)->middleware('auth:sanctum');
+
+Route::group([
+    "middleware" => "auth:api"
+], function () {
+    Route::get('/profile', [AuthController::class, 'profile']);
+    Route::get('/refresh', [AuthController::class, 'refreshToken']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::apiResource('/users', UserController::class);
+    Route::apiResource('/products', ProductController::class);
+});
