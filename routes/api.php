@@ -2,9 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,10 +20,12 @@ use App\Http\Controllers\Api\UserController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
+// User Register and Login
 Route::post('/users/register', [AuthController::class, 'register']);
 Route::post('/user/login', [AuthController::class, 'login']);
 
+Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
 
 Route::group([
     "middleware" => "auth:api"
@@ -32,5 +34,5 @@ Route::group([
     Route::get('/refresh', [AuthController::class, 'refreshToken']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::apiResource('/users', UserController::class);
-    Route::apiResource('/products', ProductController::class);
+    Route::apiResource('/products', ProductController::class)->only(['store', 'update', 'destroy']);
 });
